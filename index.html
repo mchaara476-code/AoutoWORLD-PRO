@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoWorld Pro — Global Car Marketplace</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<script>tailwind.config={theme:{extend:{colors:{ink:'#0b1220',accent:'#ef4444'}}}}</script>
+<style>
+html{scroll-behavior:smooth}
+body{background:#0b1220;color:#e8eefb;font-family:Inter,sans-serif}
+.nav-link{position:relative;padding:.5rem.15rem;font-size:.875rem;color:#c3cde0;cursor:pointer;transition:.3s}
+.nav-link:hover,.nav-link.active{color:#fff}
+.nav-link::after{content:'';position:absolute;left:0;bottom:-2px;height:2px;width:100%;background:linear-gradient(90deg,#ef4444,#ff8a5c);transform:scaleX(0);transition:.4s}
+.nav-link.active::after,.nav-link:hover::after{transform:scaleX(1)}
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;padding-top:110px;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg img{width:100%;height:110%;object-fit:cover}
+.hero-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(7,12,23,.9) 0%,rgba(7,12,23,.55) 40%,#0b1220 100%)}
+.grad-text{background:linear-gradient(100deg,#fff 12%,#ffb4a3 42%,#ef4444 72%);-webkit-background-clip:text;color:transparent}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;font-weight:600;border-radius:14px;padding:.95rem 1.75rem;transition:.35s;cursor:pointer;border:1px solid transparent}
+.btn-primary{background:linear-gradient(135deg,#ef4444,#c0211f);color:#fff}
+.btn-ghost{background:rgba(255,255,255,.07);color:#fff;border-color:rgba(255,255,255,.16)}
+.car-card{background:linear-gradient(168deg,rgba(22,35,59,.92),rgba(13,21,37,.96));border:1px solid rgba(255,255,255,.085);border-radius:20px;overflow:hidden;transition:.5s;cursor:pointer}
+.car-card:hover{transform:translateY(-8px);border-color:rgba(239,68,68,.35)}
+.card-media{position:relative;aspect-ratio:16/11;overflow:hidden;background:#0d1626}
+.card-img{width:100%;height:100%;object-fit:cover;transition:1s}
+.car-card:hover.card-img{transform:scale(1.1)}
+.badge-tag{position:absolute;top:.9rem;left:.9rem;z-index:3;font-size:.68rem;font-weight:700;padding:.36rem.72rem;border-radius:999px;background:rgba(255,255,255,.14);backdrop-filter:blur(10px)}
+.price-chip{position:absolute;bottom:.9rem;left:.9rem;z-index:3;background:rgba(8,13,25,.78);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.14);padding:.42rem.82rem;border-radius:11px;font-weight:700}
+#sellModal,#adminModal,#detailModal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(5,9,17,.88);backdrop-filter:blur(12px)}
+#sellModal.open,#adminModal.open,#detailModal.open{display:flex}
+.modal-box{width:100%;max-width:620px;max-height:90vh;overflow:auto;background:#111c30;border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:22px}
+.field label{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#8fa2bd;font-weight:600;margin-bottom:.35rem;display:block}
+.field input,.field select,.field textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);color:#eaf0fb;border-radius:12px;padding:.8rem.95rem;outline:none}
+.search-panel{background:rgba(12,20,35,.72);backdrop-filter:blur(22px);border:1px solid rgba(255,255,255,.11);border-radius:24px}
+.wa-float{position:fixed;bottom:22px;right:22px;z-index:60;width:58px;height:58px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(135deg,#25d366,#128c3f)}
+</style>
+</head>
+<body>
+<header class="fixed top-0 inset-x-0 z-50 h-[72px] flex items-center" style="background:rgba(8,13,25,.86);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.06)">
+<div class="max-w-[1280px] mx-auto w-full px-6 flex items-center justify-between">
+<div class="flex items-center gap-3"><div class="w-[42px] h-[42px] rounded-[13px] grid place-items-center" style="background:linear-gradient(140deg,#ef4444,#7f1d1d);font-weight:900">A</div><div><div class="font-extrabold">AutoWorld<span class="text-[#ef4444]">Pro</span></div><div class="text-[10px] tracking-[0.2em] text-[#8fa2bd]">GLOBAL MARKETPLACE</div></div></div>
+<nav class="hidden md:flex items-center gap-7">
+<a class="nav-link active" onclick="goTo('home')">Home</a>
+<a class="nav-link" onclick="goTo('browse')">Browse Cars</a>
+<a class="nav-link" onclick="openSell()">Sell Your Car</a>
+<a class="nav-link" onclick="goTo('dashboard')">Dashboard</a>
+<a class="nav-link" onclick="openAdmin()">Admin</a>
+</nav>
+<div class="flex items-center gap-2">
+<button class="px-3 py-2 rounded-xl text-xs border border-white/20" onclick="toggleLang()" id="langBtn">EN ▾</button>
+<button class="px-3 py-2 rounded-xl text-xs border border-white/20" onclick="toggleCurrency()" id="curBtn">MAD ▾</button>
+<button class="hidden md:flex bg-white/10 border border-white/20 px-3 py-2 rounded-xl text-xs" onclick="toast('Sign In - قريبا!')">👤 Sign In</button>
+<button class="btn btn-primary!py-2!px-4!text-sm" onclick="openSell()">+ Post an Ad</button>
+</div>
+</div>
+</header>
+
+<section id="home" class="hero">
+<div class="hero-bg"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070"></div>
+<div class="hero-overlay"></div>
+<div class="relative z-10 max-w-[1280px] mx-auto w-full px-6 grid lg:grid-cols-[1.2fr_.9fr] gap-10 items-center">
+<div>
+<h1 class="text-[clamp(36px,6vw,66px)] font-extrabold leading-[0.98]">Drive the <span class="grad-text">future</span> of car buying.</h1>
+<p class="mt-5 text-[#a9b8cd] max-w-[560px] text-lg">Buy & sell cars - 0632610217 - WhatsApp direct</p>
+<div class="mt-8 flex gap-3"><button class="btn btn-primary" onclick="goTo('browse')">Browse Cars →</button><button class="btn btn-ghost px-6 py-3 rounded-xl border" onclick="openSell()">Sell Your Car</button></div>
+</div>
+<div class="search-panel p-6">
+<h3 class="font-bold text-lg">Find Your Perfect Car</h3>
+<div class="grid grid-cols-2 gap-3 mt-4">
+<div class="field"><label>Make</label><select id="fMake" onchange="renderCars()"><option value="">All</option><option>Toyota</option><option>BMW</option><option>Mercedes</option><option>Dacia</option><option>Porsche</option><option>Renault</option></select></div>
+<div class="field"><label>City</label><select id="fCity" onchange="renderCars()"><option value="">All Morocco</option><option>Casablanca</option><option>Tangier</option><option>Rabat</option><option>Marrakech</option></select></div>
+<div class="field"><label>Max Price</label><input id="fPrice" placeholder="200000 MAD" oninput="renderCars()"></div>
+<div class="field"><label>Year</label><select id="fYear" onchange="renderCars()"><option value="">All</option><option>2024</option><option>2023</option><option>2022</option></select></div>
+</div>
+<button class="btn btn-primary w-full mt-5" onclick="goTo('browse')">🔍 Search</button>
+</div>
+</div>
+</section>
+
+<section id="browse" class="max-w-[1280px] mx-auto px-6 py-20">
+<div class="flex justify-between items-end flex-wrap gap-4"><div><div class="text-[#ff8a72] text-xs uppercase font-bold">— Marketplace</div><h2 class="text-4xl font-extrabold mt-2">Browse All Cars</h2></div>
+<div class="flex gap-2"><input id="searchInput" placeholder="Search Toyota..." class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm w-[220px]" oninput="renderCars()"><select id="sortBy" onchange="renderCars()" class="bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm"><option value="">Newest</option><option value="low">Price Low</option><option value="high">Price High</option></select></div></div>
+<div id="carsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10"></div>
+</section>
+
+<section id="dashboard" class="max-w-[1280px] mx-auto px-6 py-20 border-t border-white/5"><h2 class="text-3xl font-extrabold">Dashboard - My Listings</h2><p class="text-[#8fa2bd] mt-2">سياراتك اللي زدتيها من PC</p><div id="dashGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8"></div></section>
+<section id="admin" class="max-w-[1280px] mx-auto px-6 py-20 border-t border-white/5"><h2 class="text-3xl font-extrabold">Admin Panel</h2><p class="text-[#8fa2bd] mt-2">safa2026</p><div id="adminList" class="grid gap-3 mt-8"></div></section>
+
+<a class="wa-float" href="https://wa.me/212632610217" target="_blank">💬</a>
+
+<div id="sellModal" onclick="if(event.target===this)closeSell()"><div class="modal-box"><div class="flex justify-between"><h3 class="font-bold text-xl">+ Post Your Car</h3><button onclick="closeSell()" class="bg-white/10 px-3 py-1 rounded-lg">X</button></div>
+<div class="grid grid-cols-2 gap-3 mt-5">
+<div class="field col-span-2"><label>📸 صور من PC (حتى 5)</label><input type="file" id="carImages" accept="image/*" multiple><div id="imgPreview" class="flex gap-2 mt-2 flex-wrap"></div></div>
+<div class="field"><label>ماركة</label><input id="cMake" placeholder="Toyota"></div>
+<div class="field"><label>موديل</label><input id="cModel" placeholder="Corolla"></div>
+<div class="field"><label>سنة</label><input id="cYear" placeholder="2022"></div>
+<div class="field"><label>الثمن MAD</label><input id="cPrice" placeholder="150000"></div>
+<div class="field"><label>الكيلومتر</label><input id="cKm" placeholder="75000"></div>
+<div class="field"><label>المدينة</label><input id="cCity" placeholder="Tangier"></div>
+<div class="field col-span-2"><label>وصف</label><textarea id="cDesc" rows="3"></textarea></div>
+</div><button class="btn btn-primary w-full mt-5" onclick="saveCar()">✅ نشر السيارة</button></div></div>
+
+<div id="adminModal" onclick="if(event.target===this)closeAdmin()"><div class="modal-box!max-w-[400px]"><h3 class="font-bold">Admin Login</h3><div class="field mt-4"><label>كلمة السر</label><input type="password" id="adminPass" placeholder="safa2026"></div><button class="btn btn-primary w-full mt-4" onclick="checkAdmin()">دخول</button></div></div>
+
+<div id="detailModal" onclick="if(event.target===this)closeDetail()"><div class="modal-box!max-w-[800px]"><div class="flex justify-between"><h3 id="dTitle" class="font-bold text-xl"></h3><button onclick="closeDetail()" class="bg-white/10 px-3 py-1 rounded-lg">X</button></div><div id="dImages" class="mt-4 rounded-xl overflow-hidden aspect-[16/10] bg-[#0d1626]"><img id="dMainImg" class="w-full h-full object-cover"></div><div class="grid grid-cols-2 gap-4 mt-4"><div class="field"><label>Price</label><div id="dPrice" class="font-bold text-xl text-[#ef4444]"></div></div><div class="field"><label>Location</label><div id="dCity"></div></div></div><p id="dDesc" class="mt-4 text-[#a9b8cd]"></p><a id="dWa" target="_blank" class="btn btn-primary w-full mt-5" style="background:linear-gradient(135deg,#25d366,#128c3f)">واتساب 0632610217</a></div></div>
+
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] bg-[#111c30] border border-white/10 px-5 py-3 rounded-xl text-sm hidden"></div>
+
+<script>
+let currency='MAD',lang='EN',uploadedImages=[];
+const defaultCars=[
+{make:'Toyota',model:'Corolla',year:'2022',price:165000,km:'45000',city:'Casablanca',desc:'سيارة نقية',img:'https://images.unsplash.com/photo-1623869675781-80b8620d2233?q=80&w=800'},
+{make:'BMW',model:'X5',year:'2023',price:520000,km:'20000',city:'Rabat',desc:'BMW X5 فول أوبشن',img:'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800'},
+{make:'Mercedes',model:'C-Class',year:'2021',price:380000,km:'60000',city:'Tangier',desc:'Mercedes نظيفة',img:'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=800'},
+{make:'Dacia',model:'Duster',year:'2024',price:195000,km:'10000',city:'Tangier',desc:'Dacia Duster جديدة',img:'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800'},
+{make:'Porsche',model:'Panamera',year:'2020',price:750000,km:'35000',city:'Marrakech',desc:'Porsche Panamera',img:'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800'},
+{make:'Renault',model:'Clio',year:'2022',price:135000,km:'50000',city:'Casablanca',desc:'Clio اقتصادية',img:'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=800'}
+];
+let cars=JSON.parse(localStorage.getItem('autoworld_cars')||'null') || defaultCars;
+function save(){localStorage.setItem('autoworld_cars',JSON.stringify(cars))}
+function goTo(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'))}
+function openSell(){sellModal.classList.add('open')}
+function closeSell(){sellModal.classList.remove('open')}
+function openAdmin(){adminModal.classList.add('open')}
+function closeAdmin(){adminModal.classList.remove('open')}
+function checkAdmin(){if(adminPass.value==='safa2026'){closeAdmin();goTo('admin');toast('مرحبا Admin! ✅')}else toast('غالطة: safa2026')}
+function openDetail(i){const c=cars[i];dTitle.textContent=c.make+' '+c.model+' '+c.year;dMainImg.src=c.img || (c.images&&c.images[0]) || '';dPrice.textContent=formatPrice(c.price);dCity.textContent=c.city+' • '+c.km+' km';dDesc.textContent=c.desc;dWa.href='https://wa.me/212632610217?text=بغيت '+encodeURIComponent(c.make+' '+c.model);detailModal.classList.add('open')}
+function closeDetail(){detailModal.classList.remove('open')}
+function formatPrice(p){if(currency==='USD') return '$'+Math.round(p/10.2).toLocaleString();if(currency==='EUR') return '€'+Math.round(p/10.8).toLocaleString();return p.toLocaleString()+' MAD';}
+function toggleCurrency(){currency=currency==='MAD'?'USD':currency==='USD'?'EUR':'MAD';curBtn.textContent=currency+' ▾';renderCars();toast('Currency: '+currency)}
+function toggleLang(){lang=lang==='EN'?'AR':'EN';langBtn.textContent=lang+' ▾';document.documentElement.dir=lang==='AR'?'rtl':'ltr';toast(lang==='AR'?'عربية ✅':'English ✅')}
+function renderCars(){
+const make=fMake.value,city=fCity.value,price=fPrice.value,year=fYear.value,q=searchInput.value.toLowerCase(),sort=sortBy.value;
+let filtered=cars.filter(c=>{return (!make||c.make===make)&&(!city||c.city===city)&&(!year||c.year===year)&&(!price||c.price<=parseInt(price))&&(!q|| (c.make+c.model+c.city).toLowerCase().includes(q))});
+if(sort==='low') filtered.sort((a,b)=>a.price-b.price);
+if(sort==='high') filtered.sort((a,b)=>b.price-a.price);
+carsGrid.innerHTML=filtered.map((c,i)=>{const real=cars.indexOf(c);const img=c.images?c.images[0]:c.img;return `<div class="car-card" onclick="openDetail(${real})"><div class="card-media"><img class="card-img" src="${img}"><div class="badge-tag">${c.year}</div><div class="price-chip">${formatPrice(c.price)}</div></div><div class="p-4"><div class="font-bold">${c.make} ${c.model}</div><div class="text-xs text-[#8fa2bd] mt-1">${c.city} • ${c.km} km</div><div class="mt-3 flex gap-2"><span class="text-[11px] bg-white/5 border border-white/10 px-2 py-1 rounded-lg">${c.city}</span><span class="text-[11px] bg-[#ef4444]/20 border border-[#ef4444]/30 px-2 py-1 rounded-lg text-[#ff8a72]">${formatPrice(c.price)}</span></div></div></div>`}).join('') || '<p class="col-span-3 text-center text-[#6f809b] py-10">ما كاين حتى سيارة</p>';
+const my=cars.filter(c=>c.isMine);dashGrid.innerHTML=my.map((c,i)=>{const idx=cars.indexOf(c);const img=c.images?c.images[0]:c.img;return `<div class="car-card"><div class="card-media"><img class="card-img" src="${img}"><div class="price-chip">${formatPrice(c.price)}</div></div><div class="p-4"><div class="font-bold">${c.make} ${c.model}</div><div class="flex gap-2 mt-3"><button class="bg-white/10 px-3 py-1.5 rounded-lg text-xs" onclick="editPrice(${idx})">✏️ ثمن</button><button class="bg-[#ef4444]/20 px-3 py-1.5 rounded-lg text-xs" onclick="deleteCar(${idx})">🗑️ حذف</button></div></div></div>`}).join('') || '<p class="text-[#6f809b]">ما زال ما زدتي حتى سيارة - ورك + Post an Ad</p>';
+adminList.innerHTML=cars.map((c,i)=>`<div class="flex justify-between items-center bg-[#111c30] border border-white/10 rounded-xl p-3"><div class="flex gap-3 items-center"><img src="${c.images?c.images[0]:c.img}" class="w-12 h-12 rounded-lg object-cover"><div><div class="font-bold text-sm">${c.make} ${c.model}</div><div class="text-xs text-[#8fa2bd]">${c.city} - ${formatPrice(c.price)}</div></div></div><div class="flex gap-2"><button class="bg-white/10 px-3 py-1 rounded-lg text-xs" onclick="editPrice(${i})">✏️</button><button class="bg-[#ef4444]/30 px-3 py-1 rounded-lg text-xs" onclick="deleteCar(${i})">حذف</button></div></div>`).join('');
+}
+carImages.addEventListener('change',function(){uploadedImages=[];imgPreview.innerHTML='';Array.from(this.files).slice(0,5).forEach(f=>{const r=new FileReader();r.onload=e=>{uploadedImages.push(e.target.result);imgPreview.innerHTML+=`<img src="${e.target.result}" class="w-16 h-16 rounded-lg object-cover border border-white/20">`};r.readAsDataURL(f)})});
+function saveCar(){const make=cMake.value.trim(),model=cModel.value.trim(),year=cYear.value.trim(),price=parseInt(cPrice.value),km=cKm.value.trim(),city=cCity.value.trim(),desc=cDesc.value.trim();if(!make||!model||!price) return toast('عمر الماركة والموديل والثمن!');const newCar={make,model,year:year||'2024',price,km:km||'0',city:city||'Tangier',desc:desc||'سيارة نقية',images:uploadedImages.length?uploadedImages:undefined,img:uploadedImages[0]||'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800',isMine:true};cars.unshift(newCar);save();renderCars();closeSell();cMake.value='';cModel.value='';cYear.value='';cPrice.value='';cKm.value='';cCity.value='';cDesc.value='';carImages.value='';imgPreview.innerHTML='';uploadedImages=[];toast('تم نشر السيارة! ✅');goTo('dashboard')}
+function editPrice(i){let np=prompt('الثمن الجديد:',cars[i].price);if(np){cars[i].price=parseInt(np);save();renderCars()}}
+function deleteCar(i){if(confirm('تحذف؟')){cars.splice(i,1);save();renderCars()}}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),3000)}
+renderCars();
+</script>
+</body>
+</html>
