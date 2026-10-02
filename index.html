@@ -151,40 +151,23 @@ renderCars();
 </body>
 </html>
 <script>
-// كود المالك - غير انت عارفو
-const ADMIN_CODE = "0632610217";
-let isAdmin = localStorage.getItem("isAdmin") === "true";
-
-function checkAdmin(){
-  const postBtn = document.querySelector('a[href*="sell"], button');
-  // حيد ازرار النشر للزبون
-  if(!isAdmin){
-    document.querySelectorAll('*').forEach(el=>{
-      if(el.textContent && (el.textContent.includes('Post an Ad') || el.textContent.includes('Sell Your Car'))){
-        el.style.display = 'none';
-      }
-    });
-  }
-}
-
-// زيد زر دخول المالك فالهيدر
+const CODE="0632610217";let admin=localStorage.getItem("admin")=="1";
 setTimeout(()=>{
-  const header = document.querySelector('header, nav');
-  if(header && !document.getElementById('ownerLogin')){
-    const btn = document.createElement('button');
-    btn.id='ownerLogin';
-    btn.textContent = isAdmin ? '👑 مالك' : 'دخول المالك';
-    btn.style.cssText='background:#ef4444;color:white;padding:8px 12px;border-radius:8px;margin-left:10px;border:none;cursor:pointer';
-    btn.onclick=()=>{
-      if(isAdmin){ localStorage.removeItem('isAdmin'); location.reload(); }
-      else{
-        let code = prompt('دخل كود المالك:');
-        if(code===ADMIN_CODE){ localStorage.setItem('isAdmin','true'); location.reload(); }
-        else alert('كود خاطئ!');
-      }
-    };
-    header.appendChild(btn);
-  }
-  checkAdmin();
+ let h=document.querySelector("header");
+ if(!h)return;
+ let b=document.createElement("button");
+ b.textContent=admin?"ADMIN":"OWNER LOGIN";
+ b.style="background:red;color:white;padding:8px 12px;border-radius:8px;border:none;margin-left:10px";
+ b.onclick=()=>{
+  if(admin){localStorage.removeItem("admin");location.reload()}
+  else{let c=prompt("CODE:");if(c==CODE){localStorage.setItem("admin","1");location.reload()}else alert("WRONG")}
+ };
+ h.appendChild(b);
+ if(!admin){
+  document.querySelectorAll("a,button").forEach(e=>{
+   let t=e.textContent||"";
+   if(t.includes("Post an Ad")||t.includes("Sell Your")) e.style.display="none";
+  })
+ }
 },1000);
 </script>
