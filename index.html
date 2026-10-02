@@ -150,3 +150,41 @@ renderCars();
 </script>
 </body>
 </html>
+<script>
+// كود المالك - غير انت عارفو
+const ADMIN_CODE = "0632610217";
+let isAdmin = localStorage.getItem("isAdmin") === "true";
+
+function checkAdmin(){
+  const postBtn = document.querySelector('a[href*="sell"], button');
+  // حيد ازرار النشر للزبون
+  if(!isAdmin){
+    document.querySelectorAll('*').forEach(el=>{
+      if(el.textContent && (el.textContent.includes('Post an Ad') || el.textContent.includes('Sell Your Car'))){
+        el.style.display = 'none';
+      }
+    });
+  }
+}
+
+// زيد زر دخول المالك فالهيدر
+setTimeout(()=>{
+  const header = document.querySelector('header, nav');
+  if(header && !document.getElementById('ownerLogin')){
+    const btn = document.createElement('button');
+    btn.id='ownerLogin';
+    btn.textContent = isAdmin ? '👑 مالك' : 'دخول المالك';
+    btn.style.cssText='background:#ef4444;color:white;padding:8px 12px;border-radius:8px;margin-left:10px;border:none;cursor:pointer';
+    btn.onclick=()=>{
+      if(isAdmin){ localStorage.removeItem('isAdmin'); location.reload(); }
+      else{
+        let code = prompt('دخل كود المالك:');
+        if(code===ADMIN_CODE){ localStorage.setItem('isAdmin','true'); location.reload(); }
+        else alert('كود خاطئ!');
+      }
+    };
+    header.appendChild(btn);
+  }
+  checkAdmin();
+},1000);
+</script>
